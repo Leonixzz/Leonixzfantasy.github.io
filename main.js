@@ -1,285 +1,80 @@
-(function(){
-const STORAGE_KEY = 'fantasy-proto-save-v1';
 
-const DATA = {
-  zones: [
-    {id:'area1',name:'Greenwood Outskirts',minLevel:1,maxLevel:4,monsters:['Slime','ForestBat']},
-    {id:'area2',name:'Ashen Fields',minLevel:5,maxLevel:9,monsters:['AshImp','CharredSkeleton']},
-    {id:'area3',name:'Coastal Shoals',minLevel:8,maxLevel:12,monsters:['SeaHound','Corsair']}
-  ],
-  towns: [
-    {id:'city',name:'City of Beginnings',area:'area1',reqLevel:1,reqArea:'area1',desc:'Starter city. Crafting and training.'},
-    {id:'stone',name:'Stonefang Outpost',area:'area2',reqLevel:5,reqArea:'area2',desc:'Blacksmiths & Craftsmason Guild'},
-    {id:'ember',name:'Emberport',area:'area2',reqLevel:8,reqArea:'area2',desc:'Sea order and harbors'},
-    {id:'gild',name:'Gildenspire City',area:'area3',reqLevel:12,reqArea:'area3',desc:'Politics and high magic'}
-  ],
-  monsters: {
-    'Slime':{hp:30,atk:4,behavior:'Passive',drops:{Gel:1}},
-    'ForestBat':{hp:28,atk:5,behavior:'Neutral',drops:{Wing:1}},
-    'AshImp':{hp:70,atk:10,behavior:'Neutral',drops:{Ember:1}},
-    'CharredSkeleton':{hp:90,atk:12,behavior:'Aggressive',drops:{Bone:1}}
-  },
-  items: {
-    'Minor Health Potion':{desc:'Restores 50 HP',type:'consumable',cost:50},
-    'Minor Mana Potion':{desc:'Restores 30 MP',type:'consumable',cost:60}
-  },
-  classSkills: {
-    'Knight':{name:'Bash',desc:'A heavy bash that can stun.',power:12},
-    'Mage':{name:'Mana Ball',desc:'Small magic projectile.',power:14},
-    'Thief':{name:'Stab',desc:'Precise strike with crit chance.',power:10},
-    'Archer':{name:'Double Shot',desc:'Two quick arrow hits.',power:8}
-  }
-};
+// Compact v7 prototype main script (loads data, provides UI and mechanics)
+const SAVE_KEY = 'fantasy-v7-save-v1';
+let DATA = {items:{}, monsters:{}, schools:{}, rumors:{}, tutorial:{}};
+let state = null;
 
-let state = load() || {
-  screen:'menu',
-  player: {
-    name:'Hero',
-    race:'Human',
-    class:'Thief',
-    level:1, exp:0, gold:100,
-    stats:{HP:100,MP:50,STR:10,DEX:12,CON:10,INT:10,WIS:10,SPD:10},
-    inventory:{'Minor Health Potion':2},
-    equipment:{},
-    skills:[],
-    mapUnlocked:['area1'],
-    memoryLog:[]
-  },
-  tutorialStage:0
-};
+Promise.all([fetch('data/items.json').then(r=>r.json()), fetch('data/monsters.json').then(r=>r.json()), fetch('data/schools.json').then(r=>r.json()), fetch('data/rumors.json').then(r=>r.json()), fetch('data/tutorial.json').then(r=>r.json())]).then(([it,mo,sc,ru,tu])=>{DATA.items=it; DATA.monsters=mo; DATA.schools=sc; DATA.rumors=ru; DATA.tutorial=tu; init();});
 
-function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function load(){ try{ const s=localStorage.getItem(STORAGE_KEY); return s?JSON.parse(s):null }catch(e){return null} }
+function init(){ const s = localStorage.getItem(SAVE_KEY); if(s){ state = JSON.parse(s); } else { state = {screen:'menu', player:{name:'',race:null,class:null,level:1,exp:0,gold:100,stats:{HP:100,MP:50,STR:10,DEX:10,CON:10,INT:10,WIS:10,SPD:10},inventory:{'Minor Health Potion':2},skills:[],mapUnlocked:['area1'],journal:[],memoryLog:[]}, tutorialStep:0, currentEncounter:null, merrickCooldown:0}; } render(); }
 
-const app = document.getElementById('app');
-function render(){ app.innerHTML=''; const panel=document.createElement('div');panel.className='panel'; app.appendChild(panel); if(state.screen==='menu') renderMenu(panel); else if(state.screen==='create') renderCreate(panel); else if(state.screen==='world') renderWorld(panel); else if(state.screen==='town') renderTown(panel); else if(state.screen==='combat') renderCombat(panel); else if(state.screen==='character') renderCharacter(panel); }
-function navTo(screen,opts){ state.screen=screen; if(opts) Object.assign(state,opts); save(); render(); }
+function save(){ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+function $(id){return document.getElementById(id);}
+function clearApp(){ const app = document.getElementById('app'); app.innerHTML=''; return app; }
+function nav(s){ state.screen = s; save(); render(); }
 
-function renderMenu(container){
-  const h=document.createElement('h1');h.textContent='🌌 Fantasy RPG Prototype'; container.appendChild(h);
-  const startBtn=document.createElement('button'); startBtn.textContent='New Game'; startBtn.onclick=()=>{ state.player={...state.player,level:1,exp:0,inventory:{'Minor Health Potion':2},skills:[]}; state.tutorialStage=0; navTo('create'); }; container.appendChild(startBtn);
-  const contBtn=document.createElement('button'); contBtn.textContent='Continue'; contBtn.onclick=()=>{ navTo('world'); }; container.appendChild(contBtn);
-  const resetBtn=document.createElement('button'); resetBtn.textContent='Reset Save'; resetBtn.onclick=()=>{ localStorage.removeItem(STORAGE_KEY); alert('Save cleared. Refresh page.'); }; container.appendChild(resetBtn);
-  const read=document.createElement('div'); read.className='small'; read.style.marginTop='10px'; read.innerHTML='Tip: After creating your character, meet Isaac in the city to start the map tutorial.'; container.appendChild(read);
-}
+function render(){ const app = clearApp(); const panel = document.createElement('div'); panel.className='panel'; app.appendChild(panel); renderHUD(panel); if(state.screen==='menu') renderMenu(panel); else if(state.screen==='intro') renderIntro(panel); else if(state.screen==='create') renderCreate(panel); else if(state.screen==='world') renderWorld(panel); else if(state.screen==='map') renderMap(panel); else if(state.screen==='combat') renderCombat(panel); else if(state.screen==='town') renderTown(panel); else if(state.screen==='inventory') renderInventory(panel); else if(state.screen==='character') renderCharacter(panel); else if(state.screen==='dev') renderDev(panel); save(); }
 
-function renderCreate(container){
-  const h=document.createElement('h2'); h.textContent='Character Creation'; container.appendChild(h);
-  const nameLabel=document.createElement('div'); nameLabel.className='small'; nameLabel.textContent='Enter your name:';
-  const nameInput=document.createElement('input'); nameInput.className='input'; nameInput.value=state.player.name || ''; nameInput.oninput=(e)=>state.player.name=e.target.value;
-  container.appendChild(nameLabel); container.appendChild(nameInput);
-  const raceDiv=document.createElement('div'); raceDiv.className='zone'; raceDiv.innerHTML='<strong>Choose Race</strong><div class="small">(Racial bonuses are flavor in this prototype)</div>';
-  ['Human','Elf','Dwarf','Orc'].forEach(r=>{ const b=document.createElement('button'); b.textContent=r; b.onclick=()=>{ state.player.race=r; save(); render(); }; raceDiv.appendChild(b); });
-  container.appendChild(raceDiv);
-  const classDiv=document.createElement('div'); classDiv.className='zone'; classDiv.innerHTML='<strong>Choose Class</strong><div class="small">Pick your base class. You will receive a basic skill.</div>';
-  ['Knight','Mage','Thief','Archer'].forEach(c=>{ const b=document.createElement('button'); b.textContent=c; b.onclick=()=>{ state.player.class=c; const cs=DATA.classSkills[c]; if(cs){ state.player.skills=[cs]; } save(); render(); }; classDiv.appendChild(b); });
-  container.appendChild(classDiv);
-  const btn=document.createElement('button'); btn.textContent='Confirm & Enter City'; btn.onclick=()=>{ if(!state.player.name) state.player.name='Hero'; state.player.level=1; state.player.mapUnlocked=['area1']; state.tutorialStage=0; navTo('world',{tutorial:true}); }; container.appendChild(btn);
-  const info=document.createElement('div'); info.className='small'; info.style.marginTop='8px'; info.innerHTML=`Name: ${state.player.name||'Hero'}<br>Race: ${state.player.race}<br>Class: ${state.player.class}<br>Skill: ${state.player.skills.length?state.player.skills[0].name:'(none)'}`; container.appendChild(info);
-}
+function renderHUD(container){ const top=document.createElement('div'); top.className='topbar'; const title=document.createElement('div'); title.innerHTML='<strong>Fantasy RPG — v7</strong>'; const hud=document.createElement('div'); hud.className='hud'; const gold=document.createElement('div'); gold.className='small'; gold.textContent='Gold: '+state.player.gold+'G'; const btns=document.createElement('div'); btns.className='buttons'; ['Inventory','Stats','Map','Home'].forEach(t=>{ const b=document.createElement('button'); b.textContent=t; b.onclick=()=>{ if(t==='Inventory') nav('inventory'); if(t==='Stats') nav('character'); if(t==='Map') nav('map'); if(t==='Home') nav('world'); }; btns.appendChild(b); }); hud.appendChild(gold); hud.appendChild(btns); top.appendChild(title); top.appendChild(hud); container.appendChild(top); }
 
-function renderWorld(container){
-  const h=document.createElement('h2'); h.textContent='World Map'; container.appendChild(h);
-  const top=document.createElement('div'); top.className='topbar'; container.appendChild(top);
-  const mapBtn=document.createElement('button'); mapBtn.textContent='Open Map'; mapBtn.onclick=()=>{}; top.appendChild(mapBtn);
-  const charBtn=document.createElement('button'); charBtn.textContent='Character'; charBtn.onclick=()=>navTo('character'); top.appendChild(charBtn);
-  const invBtn=document.createElement('button'); invBtn.textContent='Inventory'; invBtn.onclick=()=>navTo('town',{townId:'city'}); top.appendChild(invBtn);
-  const hub=document.createElement('div'); hub.className='zone'; hub.innerHTML=`<strong>City of Beginnings</strong><div class='small'>Your starting hub. Meet NPCs, shop or craft.</div>`;
-  const meet=document.createElement('button'); meet.textContent='Meet Isaac (Tutorial)'; meet.onclick=()=>{ state.tutorialStage=1; state.player.memoryLog.push({location:'City of Beginnings',date:Date.now(),note:'Met Isaac, tutorial started.'}); save(); alert('Isaac: Welcome! Open the map and travel to Greenwood Outskirts (Area 1).'); }; hub.appendChild(meet);
-  const travelBtn=document.createElement('button'); travelBtn.textContent='Open Full Map'; travelBtn.onclick=()=>{ renderMap(container); }; hub.appendChild(travelBtn);
-  container.appendChild(hub);
-  const townsDiv=document.createElement('div'); townsDiv.className='zone'; townsDiv.innerHTML='<strong>All Towns</strong><div class="small">You may travel to any town, but some trials/quests require a higher level or area progress.</div>';
-  DATA.towns.forEach(t=>{
-    const tdiv=document.createElement('div'); tdiv.className='zone'; if(state.player.level < t.reqLevel) tdiv.classList.add('locked');
-    tdiv.innerHTML=`<strong>${t.name}</strong><div class='small'>${t.desc}</div><div class='small'>Requires Level: ${t.reqLevel}, Area: ${t.reqArea}</div>`;
-    const go=document.createElement('button'); go.textContent='Travel'; go.onclick=()=>{ state.location=t.id; navTo('town',{townId:t.id}); };
-    tdiv.appendChild(go);
-    townsDiv.appendChild(tdiv);
-  });
-  container.appendChild(townsDiv);
-  const mem=document.createElement('div'); mem.className='zone'; mem.innerHTML='<strong>Memory Log</strong>';
-  if(!state.player.memoryLog.length) mem.innerHTML+='<div class="small">No discoveries yet.</div>'; else{ state.player.memoryLog.slice().reverse().forEach(m=>{ const e=document.createElement('div'); e.className='small'; e.style.marginTop='6px'; e.textContent=`📍 ${m.location} — ${new Date(m.date).toLocaleString()}: ${m.note}`; mem.appendChild(e); }); }
-  container.appendChild(mem);
-}
+function renderMenu(container){ const h=document.createElement('h1'); h.textContent='🌌 Fantasy RPG (v7)'; container.appendChild(h); const newBtn=document.createElement('button'); newBtn.textContent='New Game'; newBtn.onclick=()=>nav('intro'); const cont=document.createElement('button'); cont.textContent='Continue'; cont.onclick=()=>nav('world'); const imp=document.createElement('button'); imp.textContent='Import Save'; imp.onclick=importSave; const exp=document.createElement('button'); exp.textContent='Export Save'; exp.onclick=exportSave; container.appendChild(newBtn); container.appendChild(cont); container.appendChild(imp); container.appendChild(exp); const note=document.createElement('div'); note.className='small'; note.textContent='Tip: Meet Isaac in the City to begin the tutorial.'; container.appendChild(note); }
 
-function renderMap(container){
-  container.innerHTML='';
-  const title=document.createElement('h2'); title.textContent='Map - Select an Area'; container.appendChild(title);
-  DATA.zones.forEach(z=>{
-    const zdiv=document.createElement('div'); zdiv.className='zone';
-    const unlocked = state.player.mapUnlocked.includes(z.id);
-    zdiv.innerHTML=`<strong>${z.name}</strong><div class='small'>Levels: ${z.minLevel}-${z.maxLevel}</div><div class='small'>Monsters: ${z.monsters.join(', ')}</div>`;
-    const scout=document.createElement('button'); scout.textContent='Scout (Risk%)'; scout.onclick=()=>{ const risk = calcRisk(z); alert(`${z.name} — Encounter risk: ${risk}%`); };
-    zdiv.appendChild(scout);
-    const travel=document.createElement('button'); travel.textContent='Travel'; travel.onclick=()=>{ if(state.tutorialStage===1 && z.id==='area1'){ startTutorialBattle(z); return; } startAreaEncounter(z); };
-    if(!unlocked) travel.classList.add('locked');
-    zdiv.appendChild(travel);
-    container.appendChild(zdiv);
-  });
-  const back=document.createElement('button'); back.textContent='Back to City'; back.onclick=()=>navTo('world'); container.appendChild(back);
-}
+function renderIntro(container){ const h=document.createElement('h2'); h.textContent='A Story in Two Paragraphs'; container.appendChild(h); const p=document.createElement('div'); p.className='zone'; p.innerHTML = '<p><em>The world of Aeloria was forged in flame and shadow, its lands carved by titans long forgotten. Across the realms, kingdoms rise and fall like the tides, and ancient powers stir in the dark corners of the earth. Heroes are not born here—they are made, shaped by steel, magic, and the choices they dare to make.</em></p><p><em>Now, a great wind sweeps across the land, carrying whispers of war and treasures untold. Monsters stalk the roads, rumors speak of lost cities and cursed relics, and the balance between light and darkness teeters on the edge. In this age of uncertainty, a new name will be written into the annals of history… yours.</em></p>'; container.appendChild(p); const cont=document.createElement('button'); cont.textContent='Continue'; cont.onclick=()=>nav('create'); const skip=document.createElement('button'); skip.textContent='Skip Intro'; skip.onclick=()=>nav('create'); container.appendChild(cont); container.appendChild(skip); }
 
-function calcRisk(zone){
-  const base = zone.minLevel*8 + 10;
-  const thief = state.player.class==='Thief' ? (state.player.stats.SPD||10) : 0;
-  const avoidance = Math.min(90, Math.max(10, 50 - thief/2 + (zone.minLevel*2)));
-  return Math.round(avoidance);
-}
+function renderCreate(container){ const h=document.createElement('h2'); h.textContent='Character Creation'; container.appendChild(h); const nameLabel=document.createElement('div'); nameLabel.className='small'; nameLabel.textContent='Enter your name:'; const nameInput=document.createElement('input'); nameInput.value=state.player.name; nameInput.oninput=(e)=>state.player.name=e.target.value; container.appendChild(nameLabel); container.appendChild(nameInput); const raceDiv=document.createElement('div'); raceDiv.className='zone'; raceDiv.innerHTML='<strong>Choose Race</strong>'; ['Human','Elf','Dwarf','Orc'].forEach(r=>{ const b=document.createElement('button'); b.textContent=r; b.onclick=()=>{ state.player.race=r; // small stat shifts
+    if(r==='Human'){ state.player.stats.CHA +=2; state.player.stats.SPD +=2; } if(r==='Elf'){ state.player.stats.DEX +=2; state.player.stats.INT +=2; state.player.stats.WIS +=1; } if(r==='Dwarf'){ state.player.stats.STR +=2; state.player.stats.CON +=3; } if(r==='Orc'){ state.player.stats.STR +=3; state.player.stats.DEX +=2; } save(); render(); }; raceDiv.appendChild(b); }); container.appendChild(raceDiv); const classDiv=document.createElement('div'); classDiv.className='zone'; classDiv.innerHTML='<strong>Choose Class</strong>'; const classes={'Knight':'Bash','Mage':'Mana Ball','Thief':'Stab','Archer':'Double Shot'}; Object.keys(classes).forEach(c=>{ const b=document.createElement('button'); b.textContent=c; b.onclick=()=>{ state.player.class=c; state.player.skills=[{name:classes[c],power:12,desc:'Starter skill'}]; save(); render(); }; classDiv.appendChild(b); }); container.appendChild(classDiv); const start=document.createElement('button'); start.textContent='Begin Adventure'; start.onclick=()=>{ if(!state.player.name) state.player.name='Traveler'; state.player.level=1; state.tutorialStep=0; nav('world'); }; container.appendChild(start); }
 
-function startAreaEncounter(zone){
-  const mname = zone.monsters[Math.floor(Math.random()*zone.monsters.length)];
-  const mon = JSON.parse(JSON.stringify(DATA.monsters[mname]));
-  state.currentEncounter = {zone:zone.id,monsterName:mname,monster:mon};
-  navTo('combat');
-}
+function renderWorld(container){ const h=document.createElement('h2'); h.textContent='City of Beginnings'; container.appendChild(h); const zone=document.createElement('div'); zone.className='zone'; zone.innerHTML='<strong>Inn & Market</strong><div class="small">Meet Isaac, visit vendors, and prepare.</div>'; const isaacBtn=document.createElement('button'); isaacBtn.textContent='Meet Isaac (Tutorial)'; isaacBtn.onclick=()=>{ alert('Isaac: Welcome. Open the map and travel to Area 1 to learn about danger colors and stealth.'); state.tutorialStep=1; state.player.journal.push({when:Date.now(),text:'Met Isaac',cred:'green',source:'Isaac'}); save(); }; const shopBtn=document.createElement('button'); shopBtn.textContent='Visit Vendor'; shopBtn.onclick=()=>nav('town'); zone.appendChild(isaacBtn); zone.appendChild(shopBtn); container.appendChild(zone); const rumorDiv=document.createElement('div'); rumorDiv.className='zone'; rumorDiv.innerHTML='<strong>Local Rumors</strong>'; const pool = DATA.rumors['City of Beginnings'] || []; if(pool.length){ const r = pool[Math.floor(Math.random()*pool.length)]; const el=document.createElement('div'); el.className='small'; el.textContent=(r.cred==='gray'? '(Uncertain) ': '') + r.text; rumorDiv.appendChild(el); state.player.journal.push({when:Date.now(),text:r.text,cred:r.cred,source:'Town Crier'}); save(); } container.appendChild(rumorDiv); }
 
-function startTutorialBattle(zone){
-  const mname = zone.monsters[0];
-  const mon = JSON.parse(JSON.stringify(DATA.monsters[mname]));
-  state.currentEncounter = {zone:zone.id,monsterName:mname,monster:mon,tutorial:true};
-  navTo('combat');
-}
+function renderMap(container){ container.innerHTML=''; const h=document.createElement('h2'); h.textContent='World Map'; container.appendChild(h); Object.keys(DATA.monsters).forEach(area=>{ const sample = DATA.monsters[area][0]; const z = document.createElement('div'); z.className='zone'; const unlocked = state.player.mapUnlocked.includes(area); z.innerHTML = `<strong>${area} — ${sample.description.split('.')[0]}</strong><div class='small'>Monsters: ${DATA.monsters[area].map(m=>m.name).join(', ')}</div>`; const scout=document.createElement('button'); scout.textContent='Scout (Risk)'; scout.onclick=()=>{ alert(area + ' — Risk: ' + calcRisk(area) + '%'); }; const travel=document.createElement('button'); travel.textContent='Travel'; travel.onclick=()=>{ if(state.tutorialStep===1 && area==='area1'){ startTutorialBattle(area); return; } if(!unlocked){ if(!confirm('This area is locked. Travel anyway?')) return; } if(checkMerrickSpawn()){ meetMerrick(); return; } startAreaEncounter(area); }; if(!unlocked) travel.classList.add('locked'); z.appendChild(scout); z.appendChild(travel); container.appendChild(z); }); const back=document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('world'); container.appendChild(back); }
 
-function renderCombat(container){
-  const enc = state.currentEncounter;
-  const player = state.player;
-  const mon = enc.monster;
-  const h=document.createElement('h2'); h.textContent='Combat Encounter'; container.appendChild(h);
-  const statRow=document.createElement('div'); statRow.className='statbar';
-  const ph=document.createElement('div'); ph.className='stat'; ph.textContent=`${player.name} HP:${player.stats.HP}`;
-  const mh=document.createElement('div'); mh.className='stat'; mh.textContent=`${enc.monsterName} HP:${enc.monster.hp}`;
-  statRow.appendChild(ph); statRow.appendChild(mh); container.appendChild(statRow);
-  const actions=document.createElement('div'); actions.style.marginTop='8px';
-  const attack=document.createElement('button'); attack.textContent='Attack'; attack.onclick=()=>{ playerAttack(false); };
-  const defend=document.createElement('button'); defend.textContent='Defend'; defend.onclick=()=>{ playerDefend(); };
-  const skill=document.createElement('button'); skill.textContent='Skill: '+(player.skills[0]?player.skills[0].name:'(none)'); skill.onclick=()=>{ playerSkill(); };
-  const item=document.createElement('button'); item.textContent='Use Potion'; item.onclick=()=>{ useItem(); };
-  actions.appendChild(attack); actions.appendChild(defend); actions.appendChild(skill); actions.appendChild(item);
-  container.appendChild(actions);
-  const log=document.createElement('div'); log.className='logbox'; log.style.marginTop='10px'; log.id='combat-log';
-  log.innerHTML='Combat log:'; container.appendChild(log);
-  const back=document.createElement('button'); back.textContent='Flee (End Tutorial)'; back.onclick=()=>{ if(enc.tutorial){ alert('You fled. Returning to City.'); navTo('world'); } else { navTo('world'); } };
-  container.appendChild(back);
-  save();
-}
+function calcRisk(area){ const level = state.player.level; const m = DATA.monsters[area][Math.floor(Math.random()*DATA.monsters[area].length)]; const score = m.hp + m.atk*5 + (m.def||0)*8; const base = Math.min(95,Math.max(10, Math.round((score/(level*100))*100))); const thiefBonus = state.player.class==='Thief' ? Math.round(state.player.level*1.5) : 0; return Math.max(5, base - thiefBonus); }
 
-function playerAttack(isCritForced){
-  const enc = state.currentEncounter;
-  const player = state.player;
-  const mon = enc.monster;
-  const dmg = Math.max(1, Math.floor((player.stats.STR||10)/2 + Math.random()*6));
-  mon.hp -= dmg;
-  addCombatLog(`You attack and deal ${dmg} damage.`);
-  if(mon.hp <= 0){ addCombatLog(`You defeated the ${enc.monsterName}!`); awardAfterBattle(enc); return; }
-  monsterTurn();
-  save(); render();
-}
-function playerDefend(){
-  addCombatLog('You brace yourself, reducing incoming damage this turn.');
-  state.player._defend = true;
-  monsterTurn();
-  state.player._defend = false;
-  save(); render();
-}
-function playerSkill(){
-  const enc = state.currentEncounter;
-  const player = state.player;
-  const skill = player.skills[0];
-  if(!skill){ addCombatLog('No skill available.'); return; }
-  let power = skill.power || 8;
-  if(player.class==='Knight'){
-    const stun = Math.random() < 0.25;
-    enc.monster.hp -= power;
-    addCombatLog(`You use ${skill.name} dealing ${power} damage.${stun? ' It stuns the enemy!':''}`);
-    if(stun){ addCombatLog('Enemy stunned.'); }
-    if(enc.monster.hp <= 0){ awardAfterBattle(enc); return; }
-    if(!stun) monsterTurn(); else { save(); render(); return; }
-  } else if(player.class==='Mage'){
-    enc.monster.hp -= power;
-    addCombatLog(`You cast ${skill.name} for ${power} magic damage.`);
-    if(enc.monster.hp <= 0){ awardAfterBattle(enc); return; }
-    monsterTurn();
-  } else if(player.class==='Thief'){
-    const crit = Math.random() < 0.35;
-    const dmg = Math.floor(power * (crit?2:1));
-    enc.monster.hp -= dmg;
-    addCombatLog(`You stab for ${dmg} damage.${crit? ' Critical hit!':''}`);
-    if(enc.monster.hp <= 0){ awardAfterBattle(enc); return; }
-    monsterTurn();
-  } else if(player.class==='Archer'){
-    const dmg1 = Math.floor(power + Math.random()*4);
-    const dmg2 = Math.floor(power + Math.random()*4);
-    const total = dmg1 + dmg2; enc.monster.hp -= total;
-    addCombatLog(`You fire Double Shot: ${dmg1} + ${dmg2} = ${total} damage.`);
-    if(enc.monster.hp <= 0){ awardAfterBattle(enc); return; }
-    monsterTurn();
-  } else {
-    enc.monster.hp -= power; addCombatLog(`You use ${skill.name} for ${power} damage.`); if(enc.monster.hp<=0){ awardAfterBattle(enc); return;} monsterTurn();
-  }
-  save(); render();
-}
-function useItem(){
-  const inv = state.player.inventory;
-  if(inv['Minor Health Potion']>0){ inv['Minor Health Potion']--; state.player.stats.HP = Math.min(100, state.player.stats.HP + 50); addCombatLog('You drink a Minor Health Potion (+50 HP).'); save(); render(); } else addCombatLog('No potions available.');
-}
-function monsterTurn(){
-  const enc = state.currentEncounter;
-  const mon = enc.monster;
-  const atk = mon.atk + Math.floor(Math.random()*4);
-  let damage = atk - Math.floor((state.player.stats.CON||10)/5);
-  if(state.player._defend) damage = Math.floor(damage/2);
-  damage = Math.max(1, damage);
-  state.player.stats.HP -= damage;
-  addCombatLog(`${enc.monsterName} attacks and deals ${damage} damage to you.`);
-  if(state.player.stats.HP <= 0){ addCombatLog('You have been defeated. Returning to city and restoring HP.'); state.player.stats.HP = 50; state.player.gold = Math.max(0, state.player.gold - 20); navTo('world'); }
-  save();
-}
-function awardAfterBattle(enc){
-  addCombatLog('Battle won! You gain small XP and drops.');
-  const drops = DATA.monsters[enc.monsterName].drops || {};
-  for(const k in drops){ state.player.inventory[k] = (state.player.inventory[k]||0) + drops[k]; state.player.memoryLog.push({location:enc.zone,date:Date.now(),note:'Found '+k}); }
-  if(enc.tutorial){
-    alert('Tutorial complete! Isaac: Good. Return to the city and I will explain the map further.');
-    if(!state.player.mapUnlocked.includes('area2')) state.player.mapUnlocked.push('area2');
-    state.tutorialStage = 2;
-    navTo('world');
-  } else {
-    navTo('world');
-  }
-  save();
-}
-function addCombatLog(text){ const el = document.getElementById('combat-log'); if(el) el.innerHTML += '<div class="small">• '+text+'</div>'; }
+function checkMerrickSpawn(){ const base = 15 + (state.merrickCooldown||0); const roll = Math.random()*100; if(roll < base){ state.merrickCooldown = 0; save(); return true; } state.merrickCooldown = Math.min(50, (state.merrickCooldown||0)+5); save(); return false; }
 
-function renderTown(container){
-  const townId = state.townId || state.location || 'city';
-  const town = DATA.towns.find(t=>t.id===townId) || DATA.towns[0];
-  const h=document.createElement('h2'); h.textContent=town.name; container.appendChild(h);
-  const desc=document.createElement('div'); desc.className='small'; desc.textContent=town.desc; container.appendChild(desc);
-  const npcDiv=document.createElement('div'); npcDiv.className='zone'; npcDiv.innerHTML='<strong>Inn & NPCs</strong>'; const isaacBtn=document.createElement('button'); isaacBtn.textContent='Talk to Isaac'; isaacBtn.onclick=()=>{ alert('Isaac: Good work getting here. Use the map to travel and level up. There is a crafting bench here.'); state.player.memoryLog.push({location:town.name,date:Date.now(),note:'Talked to Isaac in '+town.name}); save(); }; npcDiv.appendChild(isaacBtn);
-  container.appendChild(npcDiv);
-  const vendor=document.createElement('div'); vendor.className='zone'; vendor.innerHTML='<strong>Vendor</strong><div class="small">Buy potions</div>';
-  Object.keys(DATA.items).forEach(it=>{ const row=document.createElement('div'); row.className='small'; row.textContent=`${it} - ${DATA.items[it].cost}g - ${DATA.items[it].desc}`; const buy=document.createElement('button'); buy.textContent='Buy'; buy.onclick=()=>{ if(state.player.gold>=DATA.items[it].cost){ state.player.gold -= DATA.items[it].cost; state.player.inventory[it] = (state.player.inventory[it]||0)+1; save(); alert('Purchased '+it); render(); } else alert('Not enough gold'); }; row.appendChild(buy); vendor.appendChild(row); });
-  container.appendChild(vendor);
-  const craft=document.createElement('div'); craft.className='zone'; craft.innerHTML='<strong>Crafting Bench</strong><div class="small">Example: 2 Gel -> 1 Minor Health Potion</div>';
-  const craftBtn=document.createElement('button'); craftBtn.textContent='Craft Minor Health Potion'; craftBtn.onclick=()=>{ const inv=state.player.inventory; if((inv.Gel||0)>=2){ inv.Gel-=2; inv['Minor Health Potion']=(inv['Minor Health Potion']||0)+1; save(); alert('Crafted Minor Health Potion'); render(); } else alert('Need 2 Gel to craft.'); };
-  craft.appendChild(craftBtn); container.appendChild(craft);
-  const quests=document.createElement('div'); quests.className='zone'; quests.innerHTML='<strong>Available Quests</strong>';
-  const trialLocked = !(state.player.level>=town.reqLevel && state.player.mapUnlocked.includes(town.area));
-  if(trialLocked){ quests.innerHTML += `<div class='small'>Advanced trials locked. Reach Level ${town.reqLevel} and area ${town.reqArea} to unlock.</div>`; } else { const qbtn=document.createElement('button'); qbtn.textContent='Start Trial Quest'; qbtn.onclick=()=>{ alert('Trial started (placeholder)'); }; quests.appendChild(qbtn); }
-  container.appendChild(quests);
-  const back=document.createElement('button'); back.textContent='Return to World Map'; back.onclick=()=>navTo('world'); container.appendChild(back);
-}
+function meetMerrick(){ const app = clearApp(); const panel = document.createElement('div'); panel.className='panel'; app.appendChild(panel); renderHUD(panel); const h=document.createElement('h2'); h.textContent='Merrick the Wanderer'; panel.appendChild(h); const txt=['A hooded figure leans against a weathered cart.','Merrick's wagon creaks under the weight of goods.','A faint whistle draws your attention to a lone traveler.']; const line = txt[Math.floor(Math.random()*txt.length)]; const p=document.createElement('div'); p.className='zone'; p.innerHTML=`<div class='small'>${line}<br><em>Merrick: "Care to see my wares?"</em></div>`; panel.appendChild(p); // build stock
+  const keys = Object.keys(DATA.items); const mats = keys.filter(k=>DATA.items[k].type==='material'); const gear = keys.filter(k=>DATA.items[k].type==='weapon' || DATA.items[k].type==='armor' || DATA.items[k].type==='accessory'); const stock = []; for(let i=0;i<2;i++){ stock.push(mats[Math.floor(Math.random()*mats.length)]); } for(let i=0;i<3;i++){ stock.push(gear[Math.floor(Math.random()*gear.length)]); } // maybe give rumor
+  if(Math.random() < 0.6){ const r = pickRumor(); state.player.journal.push({when:Date.now(),text:r.text,cred:r.cred,source:'Merrick'}); save(); }
+  const shopDiv = document.createElement('div'); shopDiv.className='zone'; shopDiv.innerHTML='<strong>Merrick\'s Stock</strong>'; stock.forEach(name=>{ const def = DATA.items[name]; const price = Math.ceil(def.base_price * rarityMultiplier(def.rarity||'common') * 0.85); const row = document.createElement('div'); row.className='small'; row.innerHTML = `${name} (${def.rarity||'common'}) - ${price}G - ${def.desc||''}`; const buy = document.createElement('button'); buy.textContent='Buy'; buy.onclick=()=>{ if(state.player.gold >= price){ state.player.gold -= price; state.player.inventory[name] = (state.player.inventory[name]||0)+1; alert('Purchased '+name); save(); render(); } else alert('Not enough gold'); }; row.appendChild(buy); shopDiv.appendChild(row); }); panel.appendChild(shopDiv); const leave=document.createElement('button'); leave.textContent='Leave'; leave.onclick=()=>nav('world'); panel.appendChild(leave); }
 
-function renderCharacter(container){
-  const p=state.player; const h=document.createElement('h2'); h.textContent=p.name+' — '+p.class; container.appendChild(h);
-  const row=document.createElement('div'); row.className='row';
-  const stats=document.createElement('div'); stats.className='col zone'; stats.innerHTML='<strong>Stats</strong>';
-  Object.entries(p.stats).forEach(([k,v])=>{ const s=document.createElement('div'); s.className='small'; s.textContent=`${k}: ${v}`; stats.appendChild(s); });
-  row.appendChild(stats);
-  const inv=document.createElement('div'); inv.className='col zone'; inv.innerHTML='<strong>Inventory</strong>'; const il=document.createElement('div'); il.className='inventory-list'; Object.entries(p.inventory).forEach(([k,v])=>{ const it=document.createElement('div'); it.className='item'; it.innerHTML=`<strong>${k}</strong><div class='small'>x${v}</div><div style="margin-top:6px"><button onclick="alert('Item: '+k+' - '+(DATA.items[k]?DATA.items[k].desc:''))">Inspect</button></div>`; il.appendChild(it); }); inv.appendChild(il); row.appendChild(inv);
-  container.appendChild(row);
-  const back=document.createElement('button'); back.textContent='Back to World'; back.onclick=()=>navTo('world'); container.appendChild(back);
-}
+function pickRumor(){ const towns = Object.keys(DATA.rumors); const town = towns[Math.floor(Math.random()*towns.length)]; const pool = DATA.rumors[town]; return pool[Math.floor(Math.random()*pool.length)]; }
 
-save(); render(); window.navTo = navTo;
-})();
+function rarityMultiplier(r){ if(r==='common') return 1.0; if(r==='uncommon') return 1.3; if(r==='rare') return 1.7; if(r==='epic') return 2.3; if(r==='legend') return 3.0; return 1.0; }
+
+function startAreaEncounter(area){ const pool = DATA.monsters[area]; const m = JSON.parse(JSON.stringify(pool[Math.floor(Math.random()*pool.length)])); m.currentHP = m.hp; state.currentEncounter = {zone:area, monster:m, tutorial:false}; nav('combat'); }
+function startTutorialBattle(area){ const m = JSON.parse(JSON.stringify(DATA.monsters[area][0])); m.currentHP = m.hp; state.currentEncounter = {zone:area, monster:m, tutorial:true}; nav('combat'); }
+
+function attemptStealth(area){ const pool = DATA.monsters[area]; const candidate = pool[Math.floor(Math.random()*pool.length)]; if(candidate.behavior==='passive') return {success:true, monster:candidate}; if(candidate.behavior==='aggressive') return {success:false, monster:candidate}; const base=60; const thiefMod = state.player.class==='Thief'? state.player.level*2 : Math.floor(state.player.level); const chance = Math.min(95, base+thiefMod); const roll = Math.random()*100; return {success: roll < chance, monster: candidate}; }
+
+function renderCombat(container){ const enc = state.currentEncounter; if(!enc){ nav('world'); return; } container.innerHTML=''; const h=document.createElement('h2'); const dc = dangerColor(enc.monster); const tag = enc.monster.behavior==='boss' ? '⚫' : (dc==='green'?'🟢':dc==='yellow'?'🟡':dc==='orange'?'🟠':'🔴'); h.textContent = tag + ' ' + enc.monster.name; container.appendChild(h); const ann=document.createElement('div'); ann.className='zone'; ann.innerHTML = `<div class='small'>${enc.monster.description}</div>`; container.appendChild(ann); const status=document.createElement('div'); status.className='zone'; status.innerHTML = `<div class='small'>Player: ${state.player.name} — HP: ${state.player.stats.HP} | MP: ${state.player.stats.MP}</div><div class='small'>Enemy: ${enc.monster.currentHP}/${enc.monster.hp}</div>`; container.appendChild(status); const act=document.createElement('div'); act.className='zone'; const atk=document.createElement('button'); atk.textContent='Attack'; atk.onclick=playerAttack; const def=document.createElement('button'); def.textContent='Defend'; def.onclick=playerDefend; const skl=document.createElement('button'); skl.textContent='Skill'; skl.onclick=playerSkill; const itm=document.createElement('button'); itm.textContent='Use Item'; itm.onclick=()=>nav('inventory'); act.appendChild(atk); act.appendChild(def); act.appendChild(skl); act.appendChild(itm); container.appendChild(act); const log=document.createElement('div'); log.className='logbox'; log.id='combat-log'; log.innerHTML='<strong>Combat Log</strong><br>'; container.appendChild(log); const flee=document.createElement('button'); flee.textContent='Flee'; flee.onclick=()=>{ if(enc.tutorial){ alert('You fled to the city.'); state.currentEncounter=null; nav('world'); } else { if(confirm('Flee and return to town?')){ state.currentEncounter=null; nav('world'); } } }; container.appendChild(flee); }
+
+function dangerColor(mon){ if(mon.behavior==='boss') return 'purple'; const score = mon.hp + mon.atk*5 + (mon.def||0)*8; const threshold = state.player.level * 100; if(score <= threshold*0.9) return 'green'; if(score <= threshold*1.1) return 'yellow'; if(score <= threshold*1.3) return 'orange'; return 'red'; }
+
+function addLog(txt){ const el=document.getElementById('combat-log'); if(el) el.innerHTML += '<div class="small">• '+txt+'</div>'; }
+
+function playerAttack(){ const enc = state.currentEncounter; const dmg = Math.max(1, Math.floor((state.player.stats.STR||10)/2 + Math.random()*6)); enc.monster.currentHP -= dmg; addLog(state.player.name+' attacks for '+dmg); if(enc.monster.currentHP<=0){ finishBattle(true); return; } monsterTurn(); render(); }
+function playerDefend(){ state.player._defend = true; addLog(state.player.name+' defends'); monsterTurn(); state.player._defend = false; render(); }
+function playerSkill(){ const sk = state.player.skills[0]; if(!sk){ addLog('No skill'); return; } const power = sk.power || 8; state.currentEncounter.monster.currentHP -= power; addLog(state.player.name+' uses '+sk.name+' for '+power); if(state.currentEncounter.monster.currentHP<=0){ finishBattle(true); return; } monsterTurn(); render(); }
+
+function monsterTurn(){ const m = state.currentEncounter.monster; const atk = m.atk + Math.floor(Math.random()*4); let dmg = Math.max(1, atk - Math.floor(state.player.stats.CON/5)); if(state.player._defend) dmg = Math.floor(dmg/2); state.player.stats.HP -= dmg; addLog(m.name+' hits for '+dmg+'. HP:'+Math.max(0,state.player.stats.HP)); if(state.player.stats.HP<=0){ alert('Defeated. Returning to town.'); state.player.stats.HP = 50; state.player.gold = Math.max(0,state.player.gold-20); state.currentEncounter = null; nav('world'); } save(); }
+
+function finishBattle(v){ const enc = state.currentEncounter; if(!enc) return; if(v){ addLog('Victory'); const g = Math.floor((enc.monster.gold[0]+enc.monster.gold[1])/2); state.player.gold += g; const drops = []; (enc.monster.drops||[]).forEach(d=>{ if(Math.random() < d.chance){ state.player.inventory[d.item] = (state.player.inventory[d.item]||0)+1; drops.push(d.item); } }); if(enc.monster.behavior==='boss'){ const pool = (enc.monster.drops||[]).filter(x=>DATA.items[x.item] && (DATA.items[x.item].rarity==='rare' || DATA.items[x.item].rarity==='epic' || DATA.items[x.item].rarity==='legend')); if(pool.length){ const pick = pool[Math.floor(Math.random()*pool.length)].item; state.player.inventory[pick] = (state.player.inventory[pick]||0)+1; drops.push(pick); } } alert('You won! Gained '+g+'G. Loot: '+(drops.length?drops.join(', '):'None')); if(enc.tutorial){ if(!state.player.mapUnlocked.includes('area2')) state.player.mapUnlocked.push('area2'); alert('Tutorial complete! Area 2 unlocked.'); } state.currentEncounter=null; nav('world'); } else { state.currentEncounter=null; nav('world'); } save(); }
+
+function rollRange(r){ if(!r) return 0; if(Array.isArray(r)) return Math.floor(Math.random()*(r[1]-r[0]+1))+r[0]; return r; }
+
+function renderTown(container){ const town = state.location || 'City of Beginnings'; const h = document.createElement('h2'); h.textContent = 'Town - ' + town; container.appendChild(h); const shop = document.createElement('div'); shop.className='zone'; shop.innerHTML='<strong>Vendor</strong>'; const buy = document.createElement('button'); buy.textContent='Buy Items'; buy.onclick=()=>renderBuy(container); const sell = document.createElement('button'); sell.textContent='Sell Items'; sell.onclick=()=>renderSell(container); shop.appendChild(buy); shop.appendChild(sell); container.appendChild(shop); const back = document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('world'); container.appendChild(back); }
+
+function renderBuy(container){ container.innerHTML=''; renderHUD(container); const h = document.createElement('h2'); h.textContent='Vendor - Buy'; container.appendChild(h); const stock = ['Minor Health Potion','Minor Mana Potion','Herb','Iron Shard']; const list = document.createElement('div'); list.className='zone'; stock.forEach(name=>{ const def = DATA.items[name]||{}; const price = Math.ceil((def.base_price||10) * rarityMultiplier(def.rarity||'common')); const row = document.createElement('div'); row.className='small'; row.innerHTML = `${name} - ${price}G - ${def.desc||''}`; const b = document.createElement('button'); b.textContent='Buy'; b.onclick=()=>{ if(state.player.gold>=price){ state.player.gold -= price; state.player.inventory[name] = (state.player.inventory[name]||0)+1; alert('Bought '+name); save(); render(); } else alert('Not enough gold'); }; row.appendChild(b); list.appendChild(row); }); container.appendChild(list); const back = document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('town'); container.appendChild(back); }
+
+function renderSell(container){ container.innerHTML=''; renderHUD(container); const h = document.createElement('h2'); h.textContent='Vendor - Sell'; container.appendChild(h); const inv = state.player.inventory; const list = document.createElement('div'); list.className='inventory'; Object.keys(inv).forEach(name=>{ const qty = inv[name]; const def = DATA.items[name] || {base_price:1,rarity:'common'}; const sellPrice = Math.floor((def.base_price||1) * rarityMultiplier(def.rarity||'common') * 0.9); const slot = document.createElement('div'); slot.className='item-slot'; slot.innerHTML = `<div class='item-name'>${name} x${qty}</div><div class='small'>Sell price: ${sellPrice}G each</div>`; const s1 = document.createElement('button'); s1.textContent='Sell 1'; s1.onclick=()=>{ state.player.inventory[name]--; state.player.gold += sellPrice; if(state.player.inventory[name]<=0) delete state.player.inventory[name]; alert('Sold 1 '+name+' for '+sellPrice+'G'); save(); render(); }; const sa = document.createElement('button'); sa.textContent='Sell All'; sa.onclick=()=>{ const q = state.player.inventory[name]||0; state.player.gold += sellPrice * q; delete state.player.inventory[name]; alert('Sold all for '+(sellPrice*q)+'G'); save(); render(); }; slot.appendChild(s1); slot.appendChild(sa); list.appendChild(slot); }); container.appendChild(list); const back = document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('town'); container.appendChild(back); }
+
+function renderInventory(container){ container.innerHTML=''; renderHUD(container); const h = document.createElement('h2'); h.textContent='Inventory'; container.appendChild(h); const invDiv = document.createElement('div'); invDiv.className='inventory'; Object.keys(state.player.inventory).forEach(name=>{ const qty = state.player.inventory[name]; const def = DATA.items[name]||{}; const slot = document.createElement('div'); slot.className='item-slot'; slot.innerHTML = `<div class='item-name'>${name} x${qty}</div><div class='small'>${def.desc||''}${def.lore?(' — '+def.lore):''}</div>`; const use = document.createElement('button'); use.textContent='Use'; use.onclick=()=>{ if(def.type==='consumable'){ if(def.heal) state.player.stats.HP = Math.min(100 + state.player.level*10, state.player.stats.HP + def.heal); if(def.mana) state.player.stats.MP = Math.min(100 + state.player.level*5, state.player.stats.MP + def.mana); state.player.inventory[name]--; if(state.player.inventory[name]<=0) delete state.player.inventory[name]; alert('Used '+name); save(); render(); } else alert('Cannot use here'); }; slot.appendChild(use); invDiv.appendChild(slot); }); container.appendChild(invDiv); const back = document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('world'); container.appendChild(back); }
+
+function renderCharacter(container){ container.innerHTML=''; renderHUD(container); const h = document.createElement('h2'); h.textContent=state.player.name+' — '+(state.player.class||'No class'); container.appendChild(h); const statsDiv = document.createElement('div'); statsDiv.className='zone'; statsDiv.innerHTML='<strong>Stats</strong>'; Object.keys(state.player.stats).forEach(k=>{ const p=document.createElement('div'); p.className='small'; p.textContent=k+': '+state.player.stats[k]; statsDiv.appendChild(p); }); container.appendChild(statsDiv); const skills = document.createElement('div'); skills.className='zone'; skills.innerHTML='<strong>Skills</strong>'; (state.player.skills||[]).forEach(s=>{ const p=document.createElement('div'); p.className='small'; p.textContent=s.name+' - '+s.desc; skills.appendChild(p); }); container.appendChild(skills); const journal=document.createElement('div'); journal.className='zone'; journal.innerHTML='<strong>Journal</strong>'; (state.player.journal||[]).slice(-10).reverse().forEach(j=>{ const p=document.createElement('div'); p.className='small'; p.textContent='['+j.cred+'] '+j.text + (j.source?(' (Source: '+j.source+')'): ''); journal.appendChild(p); }); container.appendChild(journal); const back=document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('world'); container.appendChild(back); }
+
+function exportSave(){ const blob = new Blob([localStorage.getItem(SAVE_KEY)||'{}'], {type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='fantasy-v7-save.json'; a.click(); URL.revokeObjectURL(url); }
+function importSave(){ const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=(e)=>{ const f=e.target.files[0]; const r=new FileReader(); r.onload=()=>{ try{ localStorage.setItem(SAVE_KEY, r.result); alert('Imported. Reloading.'); location.reload(); } catch(err){ alert('Invalid file'); } }; r.readAsText(f); }; inp.click(); }
+
+function renderDev(container){ container.innerHTML=''; renderHUD(container); const h=document.createElement('h2'); h.textContent='Dev Tools'; container.appendChild(h); const g=document.createElement('button'); g.textContent='Give 500G'; g.onclick=()=>{ state.player.gold += 500; save(); render(); }; container.appendChild(g); const l=document.createElement('button'); l.textContent='Level Up'; l.onclick=()=>{ state.player.level +=1; save(); render(); }; container.appendChild(l); const back=document.createElement('button'); back.textContent='Back'; back.onclick=()=>nav('world'); container.appendChild(back); }
+
+document.addEventListener('DOMContentLoaded', ()=>{ render(); });

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "intro",
+    "text": "Intro shown then proceed to name selection."
+  },
+  {
+    "id": "meet_isaac",
+    "text": "Isaac will teach you the map, danger colors, and stealth."
+  },
+  {
+    "id": "area1",
+    "text": "Fight a creature in area1, see danger color, get a sample item."
+  }
+]

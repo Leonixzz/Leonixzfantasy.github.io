@@ -1,2 +1,1 @@
-# Fantasy Prototype v4
-Updated with loot drops, gold economy, and improved battle system.
+Open index.html to play. To publish to GitHub Pages upload contents and enable Pages.

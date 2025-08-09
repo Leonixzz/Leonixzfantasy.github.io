@@ -1,1 +1,162 @@
-{"Herb":{"type":"healing","heal_amount":10,"sell_price":5}}
+{
+  "Herb": {
+    "type": "material",
+    "rarity": "common",
+    "base_price": 5,
+    "stack": true,
+    "max_stack": 99,
+    "desc": "A common herb used in many potions."
+  },
+  "Gel": {
+    "type": "material",
+    "rarity": "common",
+    "base_price": 3,
+    "stack": true,
+    "max_stack": 99,
+    "desc": "Jelly from slimes, used by alchemists."
+  },
+  "Iron Shard": {
+    "type": "material",
+    "rarity": "uncommon",
+    "base_price": 20,
+    "stack": true,
+    "max_stack": 99,
+    "desc": "A raw iron fragment for smithing."
+  },
+  "Frost Crystal": {
+    "type": "material",
+    "rarity": "uncommon",
+    "base_price": 90,
+    "stack": true,
+    "max_stack": 50,
+    "desc": "A shard of eternal frost."
+  },
+  "Wyrm Fang": {
+    "type": "material",
+    "rarity": "rare",
+    "base_price": 400,
+    "stack": true,
+    "max_stack": 20,
+    "desc": "A curved fang from a wyrm. Valuable to craftsmen."
+  },
+  "Minor Health Potion": {
+    "type": "consumable",
+    "rarity": "common",
+    "base_price": 50,
+    "stack": true,
+    "max_stack": 99,
+    "heal": 50,
+    "desc": "Restores 50 HP."
+  },
+  "Minor Mana Potion": {
+    "type": "consumable",
+    "rarity": "common",
+    "base_price": 60,
+    "stack": true,
+    "max_stack": 99,
+    "mana": 30,
+    "desc": "Restores 30 MP."
+  },
+  "Greater Health Potion": {
+    "type": "consumable",
+    "rarity": "rare",
+    "base_price": 300,
+    "stack": true,
+    "max_stack": 20,
+    "heal": 200,
+    "desc": "Restores a large amount of HP."
+  },
+  "Steelbranch Dagger": {
+    "type": "weapon",
+    "rarity": "uncommon",
+    "base_price": 120,
+    "stack": false,
+    "stats": {
+      "DEX": 1,
+      "SPD": 2
+    },
+    "desc": "A dagger carved from steelwood."
+  },
+  "Verdant Staff": {
+    "type": "weapon",
+    "rarity": "rare",
+    "base_price": 420,
+    "stack": false,
+    "stats": {
+      "INT": 3,
+      "MAG": 2
+    },
+    "desc": "A staff wrapped in living vines.",
+    "lore": "Grown in the hidden groves of the Fae."
+  },
+  "Traveler's Cloak": {
+    "type": "armor",
+    "rarity": "common",
+    "base_price": 45,
+    "stack": false,
+    "stats": {
+      "DEF": 1,
+      "SPD": 1
+    },
+    "desc": "A simple cloak worn by travelers."
+  },
+  "Molten Bulwark Shield": {
+    "type": "armor",
+    "rarity": "epic",
+    "base_price": 1800,
+    "stack": false,
+    "stats": {
+      "DEF": 10,
+      "CON": 4
+    },
+    "desc": "A shield forged in volcanic forges.",
+    "lore": "Forged by firewardens of the south."
+  },
+  "Stellar Prismblade": {
+    "type": "weapon",
+    "rarity": "legend",
+    "base_price": 5000,
+    "stack": false,
+    "stats": {
+      "STR": 12,
+      "INT": 6
+    },
+    "desc": "A blade containing a sliver of a fallen star.",
+    "lore": "Rumored to cut through fate."
+  },
+  "Enchanted Ring": {
+    "type": "accessory",
+    "rarity": "epic",
+    "base_price": 1200,
+    "stack": false,
+    "stats": {
+      "CHA": 3
+    },
+    "desc": "A ring that radiates power.",
+    "lore": "Worn by court sages."
+  },
+  "Vanguard Warplate": {
+    "type": "armor",
+    "rarity": "rare",
+    "base_price": 2200,
+    "stack": false,
+    "stats": {
+      "DEF": 8,
+      "CON": 3
+    },
+    "desc": "Armor from the Iron Vanguard.",
+    "lore": "Worn by champions who hold the line."
+  },
+  "Cloak of the Shadowfang": {
+    "type": "armor",
+    "rarity": "epic",
+    "base_price": 3200,
+    "stack": false,
+    "stats": {
+      "DEX": 4,
+      "SPD": 3
+    },
+    "desc": "A cloak woven with shadow-silk.",
+    "lore": "Favored by Crimson Veil agents."
+  }
+}

@@ -1,1 +1,1266 @@
-{"area1":[{"name":"Slime","hp":20,"gold_drop":5,"loot":["Herb"]}]}
+{
+  "area1": [
+    {
+      "id": "area1_m1",
+      "name": "Greenwood Scrawler",
+      "hp": 40,
+      "atk": 6,
+      "def": 2,
+      "behavior": "aggressive",
+      "gold": [
+        5,
+        8
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.6
+        },
+        {
+          "item": "Gel",
+          "chance": 0.15
+        }
+      ],
+      "description": "A Greenwood Scrawler prowling the Greenwood Outskirts."
+    },
+    {
+      "id": "area1_m2",
+      "name": "Greenwood Runt",
+      "hp": 44,
+      "atk": 6,
+      "def": 2,
+      "behavior": "neutral",
+      "gold": [
+        5,
+        8
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.6
+        },
+        {
+          "item": "Gel",
+          "chance": 0.15
+        }
+      ],
+      "description": "A Greenwood Runt prowling the Greenwood Outskirts."
+    },
+    {
+      "id": "area1_m3",
+      "name": "Greenwood Strider",
+      "hp": 49,
+      "atk": 7,
+      "def": 2,
+      "behavior": "passive",
+      "gold": [
+        6,
+        9
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.6
+        },
+        {
+          "item": "Gel",
+          "chance": 0.15
+        }
+      ],
+      "description": "A Greenwood Strider prowling the Greenwood Outskirts."
+    },
+    {
+      "id": "area1_boss",
+      "name": "Greenwood Outskirts Guardian",
+      "hp": 400,
+      "atk": 24,
+      "def": 15,
+      "behavior": "boss",
+      "gold": [
+        200,
+        300
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.01
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Greenwood Outskirts, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area2": [
+    {
+      "id": "area2_m1",
+      "name": "Stonefang Scrawler",
+      "hp": 64,
+      "atk": 8,
+      "def": 3,
+      "behavior": "aggressive",
+      "gold": [
+        9,
+        14
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.5
+        },
+        {
+          "item": "Gel",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Stonefang Scrawler prowling the Stonefang Mines."
+    },
+    {
+      "id": "area2_m2",
+      "name": "Stonefang Runt",
+      "hp": 71,
+      "atk": 8,
+      "def": 3,
+      "behavior": "neutral",
+      "gold": [
+        10,
+        16
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.5
+        },
+        {
+          "item": "Gel",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Stonefang Runt prowling the Stonefang Mines."
+    },
+    {
+      "id": "area2_m3",
+      "name": "Stonefang Strider",
+      "hp": 79,
+      "atk": 9,
+      "def": 3,
+      "behavior": "passive",
+      "gold": [
+        12,
+        19
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.5
+        },
+        {
+          "item": "Gel",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Stonefang Strider prowling the Stonefang Mines."
+    },
+    {
+      "id": "area2_boss",
+      "name": "Stonefang Mines Guardian",
+      "hp": 640,
+      "atk": 32,
+      "def": 20,
+      "behavior": "boss",
+      "gold": [
+        400,
+        600
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.01
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Stonefang Mines, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area3": [
+    {
+      "id": "area3_m1",
+      "name": "Ember Scrawler",
+      "hp": 102,
+      "atk": 10,
+      "def": 4,
+      "behavior": "aggressive",
+      "gold": [
+        18,
+        28
+      ],
+      "drops": [
+        {
+          "item": "Ash Ember",
+          "chance": 0.25
+        },
+        {
+          "item": "Herb",
+          "chance": 0.2
+        }
+      ],
+      "description": "A Ember Scrawler prowling the Ember Coast."
+    },
+    {
+      "id": "area3_m2",
+      "name": "Ember Runt",
+      "hp": 114,
+      "atk": 11,
+      "def": 4,
+      "behavior": "neutral",
+      "gold": [
+        20,
+        32
+      ],
+      "drops": [
+        {
+          "item": "Ash Ember",
+          "chance": 0.25
+        },
+        {
+          "item": "Herb",
+          "chance": 0.2
+        }
+      ],
+      "description": "A Ember Runt prowling the Ember Coast."
+    },
+    {
+      "id": "area3_m3",
+      "name": "Ember Strider",
+      "hp": 126,
+      "atk": 12,
+      "def": 4,
+      "behavior": "passive",
+      "gold": [
+        23,
+        36
+      ],
+      "drops": [
+        {
+          "item": "Ash Ember",
+          "chance": 0.25
+        },
+        {
+          "item": "Herb",
+          "chance": 0.2
+        }
+      ],
+      "description": "A Ember Strider prowling the Ember Coast."
+    },
+    {
+      "id": "area3_mini",
+      "name": "Ember Coast Warden",
+      "hp": 428,
+      "atk": 22,
+      "def": 11,
+      "behavior": "aggressive",
+      "gold": [
+        240,
+        360
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Ember Coast."
+    },
+    {
+      "id": "area3_boss",
+      "name": "Ember Coast Guardian",
+      "hp": 1020,
+      "atk": 40,
+      "def": 25,
+      "behavior": "boss",
+      "gold": [
+        800,
+        1200
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.01
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Ember Coast, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area4": [
+    {
+      "id": "area4_m1",
+      "name": "Frostglen Scrawler",
+      "hp": 163,
+      "atk": 14,
+      "def": 5,
+      "behavior": "aggressive",
+      "gold": [
+        34,
+        54
+      ],
+      "drops": [
+        {
+          "item": "Frost Crystal",
+          "chance": 0.35
+        },
+        {
+          "item": "Herb",
+          "chance": 0.1
+        }
+      ],
+      "description": "A Frostglen Scrawler prowling the Frostglen."
+    },
+    {
+      "id": "area4_m2",
+      "name": "Frostglen Runt",
+      "hp": 182,
+      "atk": 15,
+      "def": 6,
+      "behavior": "neutral",
+      "gold": [
+        39,
+        62
+      ],
+      "drops": [
+        {
+          "item": "Frost Crystal",
+          "chance": 0.35
+        },
+        {
+          "item": "Herb",
+          "chance": 0.1
+        }
+      ],
+      "description": "A Frostglen Runt prowling the Frostglen."
+    },
+    {
+      "id": "area4_m3",
+      "name": "Frostglen Strider",
+      "hp": 202,
+      "atk": 16,
+      "def": 6,
+      "behavior": "passive",
+      "gold": [
+        44,
+        70
+      ],
+      "drops": [
+        {
+          "item": "Frost Crystal",
+          "chance": 0.35
+        },
+        {
+          "item": "Herb",
+          "chance": 0.1
+        }
+      ],
+      "description": "A Frostglen Strider prowling the Frostglen."
+    },
+    {
+      "id": "area4_mini",
+      "name": "Frostglen Warden",
+      "hp": 684,
+      "atk": 30,
+      "def": 15,
+      "behavior": "aggressive",
+      "gold": [
+        480,
+        720
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Frostglen."
+    },
+    {
+      "id": "area4_boss",
+      "name": "Frostglen Guardian",
+      "hp": 1630,
+      "atk": 56,
+      "def": 35,
+      "behavior": "boss",
+      "gold": [
+        1600,
+        2400
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.01
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Frostglen, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area5": [
+    {
+      "id": "area5_m1",
+      "name": "Gildenspire Scrawler",
+      "hp": 262,
+      "atk": 19,
+      "def": 7,
+      "behavior": "aggressive",
+      "gold": [
+        65,
+        104
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Gildenspire Scrawler prowling the Gildenspire City."
+    },
+    {
+      "id": "area5_m2",
+      "name": "Gildenspire Runt",
+      "hp": 293,
+      "atk": 20,
+      "def": 8,
+      "behavior": "neutral",
+      "gold": [
+        74,
+        118
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Gildenspire Runt prowling the Gildenspire City."
+    },
+    {
+      "id": "area5_m3",
+      "name": "Gildenspire Strider",
+      "hp": 324,
+      "atk": 22,
+      "def": 8,
+      "behavior": "passive",
+      "gold": [
+        84,
+        134
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Gildenspire Strider prowling the Gildenspire City."
+    },
+    {
+      "id": "area5_mini",
+      "name": "Gildenspire City Warden",
+      "hp": 1100,
+      "atk": 41,
+      "def": 20,
+      "behavior": "aggressive",
+      "gold": [
+        960,
+        1440
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Gildenspire City."
+    },
+    {
+      "id": "area5_boss",
+      "name": "Gildenspire City Guardian",
+      "hp": 2620,
+      "atk": 76,
+      "def": 47,
+      "behavior": "boss",
+      "gold": [
+        3200,
+        4800
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.01
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Gildenspire City, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area6": [
+    {
+      "id": "area6_m1",
+      "name": "Hollowreach Scrawler",
+      "hp": 419,
+      "atk": 26,
+      "def": 10,
+      "behavior": "aggressive",
+      "gold": [
+        123,
+        196
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Hollowreach Scrawler prowling the Hollowreach."
+    },
+    {
+      "id": "area6_m2",
+      "name": "Hollowreach Runt",
+      "hp": 469,
+      "atk": 28,
+      "def": 11,
+      "behavior": "neutral",
+      "gold": [
+        142,
+        227
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Hollowreach Runt prowling the Hollowreach."
+    },
+    {
+      "id": "area6_m3",
+      "name": "Hollowreach Strider",
+      "hp": 519,
+      "atk": 31,
+      "def": 12,
+      "behavior": "passive",
+      "gold": [
+        160,
+        256
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Hollowreach Strider prowling the Hollowreach."
+    },
+    {
+      "id": "area6_mini",
+      "name": "Hollowreach Warden",
+      "hp": 1759,
+      "atk": 57,
+      "def": 28,
+      "behavior": "aggressive",
+      "gold": [
+        1920,
+        2880
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Hollowreach."
+    },
+    {
+      "id": "area6_boss",
+      "name": "Hollowreach Guardian",
+      "hp": 4190,
+      "atk": 104,
+      "def": 65,
+      "behavior": "boss",
+      "gold": [
+        6400,
+        9600
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.05
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Hollowreach, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area7": [
+    {
+      "id": "area7_m1",
+      "name": "Sunveil Scrawler",
+      "hp": 671,
+      "atk": 36,
+      "def": 14,
+      "behavior": "aggressive",
+      "gold": [
+        235,
+        376
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.6
+        },
+        {
+          "item": "Gel",
+          "chance": 0.15
+        }
+      ],
+      "description": "A Sunveil Scrawler prowling the Sunveil Fields."
+    },
+    {
+      "id": "area7_m2",
+      "name": "Sunveil Runt",
+      "hp": 751,
+      "atk": 39,
+      "def": 15,
+      "behavior": "neutral",
+      "gold": [
+        270,
+        432
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.6
+        },
+        {
+          "item": "Gel",
+          "chance": 0.15
+        }
+      ],
+      "description": "A Sunveil Runt prowling the Sunveil Fields."
+    },
+    {
+      "id": "area7_m3",
+      "name": "Sunveil Strider",
+      "hp": 832,
+      "atk": 43,
+      "def": 17,
+      "behavior": "passive",
+      "gold": [
+        305,
+        488
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.6
+        },
+        {
+          "item": "Gel",
+          "chance": 0.15
+        }
+      ],
+      "description": "A Sunveil Strider prowling the Sunveil Fields."
+    },
+    {
+      "id": "area7_mini",
+      "name": "Sunveil Fields Warden",
+      "hp": 2818,
+      "atk": 79,
+      "def": 39,
+      "behavior": "aggressive",
+      "gold": [
+        3840,
+        5760
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Sunveil Fields."
+    },
+    {
+      "id": "area7_boss",
+      "name": "Sunveil Fields Guardian",
+      "hp": 6710,
+      "atk": 144,
+      "def": 90,
+      "behavior": "boss",
+      "gold": [
+        12800,
+        19200
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.05
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Sunveil Fields, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area8": [
+    {
+      "id": "area8_m1",
+      "name": "Ashfang Scrawler",
+      "hp": 1073,
+      "atk": 49,
+      "def": 19,
+      "behavior": "aggressive",
+      "gold": [
+        446,
+        713
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Ashfang Scrawler prowling the Ashfang Bastion."
+    },
+    {
+      "id": "area8_m2",
+      "name": "Ashfang Runt",
+      "hp": 1201,
+      "atk": 53,
+      "def": 21,
+      "behavior": "neutral",
+      "gold": [
+        513,
+        820
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Ashfang Runt prowling the Ashfang Bastion."
+    },
+    {
+      "id": "area8_m3",
+      "name": "Ashfang Strider",
+      "hp": 1330,
+      "atk": 58,
+      "def": 23,
+      "behavior": "passive",
+      "gold": [
+        581,
+        929
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Ashfang Strider prowling the Ashfang Bastion."
+    },
+    {
+      "id": "area8_mini",
+      "name": "Ashfang Bastion Warden",
+      "hp": 4506,
+      "atk": 107,
+      "def": 53,
+      "behavior": "aggressive",
+      "gold": [
+        7680,
+        11520
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Ashfang Bastion."
+    },
+    {
+      "id": "area8_boss",
+      "name": "Ashfang Bastion Guardian",
+      "hp": 10730,
+      "atk": 196,
+      "def": 122,
+      "behavior": "boss",
+      "gold": [
+        25600,
+        38400
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 1.0
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.05
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Ashfang Bastion, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area9": [
+    {
+      "id": "area9_m1",
+      "name": "Mirage Scrawler",
+      "hp": 1717,
+      "atk": 66,
+      "def": 26,
+      "behavior": "aggressive",
+      "gold": [
+        849,
+        1358
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Mirage Scrawler prowling the Mirage Bazaar."
+    },
+    {
+      "id": "area9_m2",
+      "name": "Mirage Runt",
+      "hp": 1923,
+      "atk": 72,
+      "def": 28,
+      "behavior": "neutral",
+      "gold": [
+        976,
+        1561
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Mirage Runt prowling the Mirage Bazaar."
+    },
+    {
+      "id": "area9_m3",
+      "name": "Mirage Strider",
+      "hp": 2129,
+      "atk": 79,
+      "def": 31,
+      "behavior": "passive",
+      "gold": [
+        1103,
+        1764
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Mirage Strider prowling the Mirage Bazaar."
+    },
+    {
+      "id": "area9_mini",
+      "name": "Mirage Bazaar Warden",
+      "hp": 7211,
+      "atk": 145,
+      "def": 72,
+      "behavior": "aggressive",
+      "gold": [
+        15360,
+        23040
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Mirage Bazaar."
+    },
+    {
+      "id": "area9_boss",
+      "name": "Mirage Bazaar Guardian",
+      "hp": 17170,
+      "atk": 264,
+      "def": 165,
+      "behavior": "boss",
+      "gold": [
+        51200,
+        76800
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.05
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.0
+        }
+      ],
+      "description": "The guardian of Mirage Bazaar, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ],
+  "area10": [
+    {
+      "id": "area10_m1",
+      "name": "Starfall Scrawler",
+      "hp": 2748,
+      "atk": 89,
+      "def": 35,
+      "behavior": "aggressive",
+      "gold": [
+        1613,
+        2580
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Starfall Scrawler prowling the Starfall Observatory."
+    },
+    {
+      "id": "area10_m2",
+      "name": "Starfall Runt",
+      "hp": 3077,
+      "atk": 97,
+      "def": 38,
+      "behavior": "neutral",
+      "gold": [
+        1855,
+        2968
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Starfall Runt prowling the Starfall Observatory."
+    },
+    {
+      "id": "area10_m3",
+      "name": "Starfall Strider",
+      "hp": 3407,
+      "atk": 106,
+      "def": 42,
+      "behavior": "passive",
+      "gold": [
+        2097,
+        3355
+      ],
+      "drops": [
+        {
+          "item": "Herb",
+          "chance": 0.12
+        }
+      ],
+      "description": "A Starfall Strider prowling the Starfall Observatory."
+    },
+    {
+      "id": "area10_mini",
+      "name": "Starfall Observatory Warden",
+      "hp": 11541,
+      "atk": 195,
+      "def": 97,
+      "behavior": "aggressive",
+      "gold": [
+        30720,
+        46080
+      ],
+      "drops": [
+        {
+          "item": "Iron Shard",
+          "chance": 0.6
+        },
+        {
+          "item": "Minor Health Potion",
+          "chance": 0.2
+        }
+      ],
+      "description": "A powerful guardian of Starfall Observatory."
+    },
+    {
+      "id": "area10_boss",
+      "name": "Starfall Observatory Guardian",
+      "hp": 27480,
+      "atk": 356,
+      "def": 222,
+      "behavior": "boss",
+      "gold": [
+        102400,
+        153600
+      ],
+      "drops": [
+        {
+          "item": "Vanguard Warplate",
+          "chance": 0.05
+        },
+        {
+          "item": "Cloak of the Shadowfang",
+          "chance": 0.05
+        },
+        {
+          "item": "Stellar Prismblade",
+          "chance": 0.02
+        }
+      ],
+      "description": "The guardian of Starfall Observatory, a legendary foe.",
+      "phases": [
+        {
+          "threshold": 100,
+          "mult": 1.0
+        },
+        {
+          "threshold": 50,
+          "mult": 1.3,
+          "note": "Enrages and attacks harder."
+        },
+        {
+          "threshold": 20,
+          "mult": 1.8,
+          "note": "Final desperate assault."
+        }
+      ]
+    }
+  ]
+}

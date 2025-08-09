@@ -1,0 +1,26 @@
+{
+  "City of Beginnings": [
+    {
+      "text": "They say the Stonefang Mines glow at midnight.",
+      "cred": "gray"
+    },
+    {
+      "text": "They tested recruits at Ashfang at dusk.",
+      "cred": "green"
+    },
+    {
+      "text": "Someone spotted a star fragment near Starfall Observatory.",
+      "cred": "purple"
+    }
+  ],
+  "Ashfang Bastion": [
+    {
+      "text": "A great hammer once shattered a bridge here.",
+      "cred": "green"
+    },
+    {
+      "text": "A cursed banner lies in the old ruins to the north.",
+      "cred": "gray"
+    }
+  ]
+}

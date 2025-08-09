@@ -1,0 +1,23 @@
+{
+  "Ashfang Bastion": {
+    "area": "area8",
+    "school": "Iron Vanguard",
+    "npc": "Commander Rorek",
+    "req_level": 10,
+    "desc": "Heavy armor & melee training."
+  },
+  "Hollowreach": {
+    "area": "area6",
+    "school": "Crimson Veil",
+    "npc": "Mistress Nyra",
+    "req_level": 10,
+    "desc": "Stealth & assassination."
+  },
+  "Starfall Observatory": {
+    "area": "area10",
+    "school": "Astral College",
+    "npc": "High Arcanist Selwyn",
+    "req_level": 15,
+    "desc": "Elemental & arcane magic."
+  }
+}
