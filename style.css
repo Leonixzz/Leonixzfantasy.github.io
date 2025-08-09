@@ -1,0 +1,22 @@
+
+:root{--bg:#071022;--panel:#0f1b2b;--muted:#9fb0c8;--accent:#7ad7ff;}
+body{margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);color:#eaf6ff;}
+.app{max-width:1000px;margin:18px auto;padding:16px;}
+.panel{background:linear-gradient(180deg,#071827, #071a2a);padding:14px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+.topbar{display:flex;gap:8px;justify-content:center;margin-bottom:12px;}
+button{background:#0b2b3a;border:none;color:#eaf6ff;padding:8px 12px;border-radius:8px;cursor:pointer}
+button.small{padding:6px 8px;font-size:14px}
+h1{margin:6px 0 12px 0;text-align:center}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1;min-width:220px}
+.zone{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin:6px 0;background:rgba(255,255,255,0.02)}
+.small{font-size:13px;color:var(--muted)}
+.inventory-list{display:flex;flex-wrap:wrap;gap:8px}
+.item{background:#07162a;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);min-width:140px}
+.statbar{display:flex;gap:8px;align-items:center}
+.stat{background:#072234;padding:8px;border-radius:8px}
+.logbox{background:#04131a;padding:8px;border-radius:8px;max-height:200px;overflow:auto}
+.center{display:flex;justify-content:center}
+.input{padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:#05141e;color:#eaf6ff}
+.locked{opacity:0.5}
+.icon{font-weight:bold;margin-right:6px}
